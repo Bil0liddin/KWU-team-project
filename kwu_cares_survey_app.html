@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>KWU Cares — Student Survey</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:#0F0F1A;min-height:100vh;display:flex;justify-content:center;}
+.app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column;background:#FAFAFA;position:relative;}
+.app-header{background:#1E1B4B;padding:16px 20px 12px;position:sticky;top:0;z-index:10;}
+.lang-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.brand{color:#A78BFA;font-size:11px;font-weight:700;letter-spacing:1.5px;}
+.lang-pills{display:flex;gap:6px;}
+.lp{padding:5px 14px;border-radius:99px;border:1px solid #312E81;background:transparent;color:#6B7280;font-size:12px;cursor:pointer;font-weight:600;}
+.lp.on{background:#4F46E5;color:white;border-color:#4F46E5;}
+.prog-wrap{margin-top:2px;}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:5px;}
+.prog-track{height:4px;background:#1E293B;border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:#818CF8;border-radius:99px;transition:width 0.4s ease;}
+
+.screen{flex:1;padding:24px 20px 120px;}
+.q-chip{display:inline-block;background:#EEF2FF;color:#4F46E5;font-size:11px;font-weight:700;padding:5px 14px;border-radius:99px;margin-bottom:14px;}
+.q-text{font-size:20px;font-weight:700;color:#111827;line-height:1.3;margin-bottom:6px;}
+.q-ko{font-size:13px;color:#6B7280;margin-bottom:24px;}
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1.5px solid #E5E7EB;background:white;cursor:pointer;text-align:left;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+.opt:active{transform:scale(0.98);}
+.opt.sel{border-color:#4F46E5;background:#EEF2FF;}
+.opt-dot{width:22px;height:22px;border-radius:50%;border:2px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.opt.sel .opt-dot{background:#4F46E5;border-color:#4F46E5;}
+.opt.sel .opt-dot::after{content:'';width:8px;height:8px;border-radius:50%;background:white;display:block;}
+.opt-labels{display:flex;flex-direction:column;}
+.opt-en{font-size:15px;font-weight:600;color:#111827;}
+.opt.sel .opt-en{color:#3730A3;}
+.opt-ko{font-size:12px;color:#9CA3AF;margin-top:2px;}
+.opt.sel .opt-ko{color:#6366F1;}
+
+.scale-wrap{display:flex;flex-direction:column;gap:12px;}
+.scale-btns{display:flex;gap:8px;}
+.sb{flex:1;height:60px;border-radius:12px;border:1.5px solid #E5E7EB;background:white;font-size:20px;font-weight:700;color:#374151;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+.sb:active{transform:scale(0.95);}
+.sb.sel{background:#4F46E5;border-color:#4F46E5;color:white;}
+.scale-ends{display:flex;justify-content:space-between;font-size:12px;color:#9CA3AF;padding:0 4px;}
+
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:12px 20px 28px;background:#FAFAFA;border-top:1px solid #F3F4F6;}
+.btn-next{width:100%;padding:17px;background:#4F46E5;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+.btn-next:active{transform:scale(0.98);background:#3730A3;}
+.btn-back{width:100%;padding:12px;background:transparent;color:#9CA3AF;border:none;font-size:14px;cursor:pointer;margin-top:4px;}
+
+.err-shake{animation:shake 0.3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px)}}
+
+.ty-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;background:#FAFAFA;}
+.ty-icon{width:80px;height:80px;background:#EEF2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;color:#4F46E5;font-weight:700;}
+.ty-title{font-size:26px;font-weight:700;color:#111827;margin-bottom:8px;}
+.ty-sub{font-size:15px;color:#6B7280;line-height:1.6;margin-bottom:32px;}
+.ty-btn{width:100%;padding:17px;background:#4F46E5;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.ty-btn2{width:100%;padding:14px;background:#F3F4F6;color:#6B7280;border:none;border-radius:14px;font-size:14px;cursor:pointer;}
+
+.res-screen{flex:1;padding:24px 20px 120px;background:#FAFAFA;}
+.res-title{font-size:22px;font-weight:700;color:#111827;margin-bottom:4px;}
+.res-count{font-size:13px;color:#4F46E5;font-weight:600;margin-bottom:20px;}
+.res-card{background:white;border-radius:14px;border:1px solid #F3F4F6;padding:18px;margin-bottom:12px;}
+.res-q{font-size:14px;font-weight:700;color:#374151;margin-bottom:14px;line-height:1.4;}
+.res-row{margin-bottom:10px;}
+.res-row-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+.res-bar-track{height:7px;background:#F3F4F6;border-radius:99px;overflow:hidden;}
+.res-bar-fill{height:100%;background:#4F46E5;border-radius:99px;transition:width 0.6s ease;}
+.res-label{color:#374151;font-weight:500;}
+.res-pct{color:#4F46E5;font-weight:700;}
+
+@media(min-width:481px){
+  body{background:#E5E7EB;}
+  .app{border-radius:0;box-shadow:0 4px 40px rgba(0,0,0,0.15);}
+  .bottom-bar{border-radius:0 0 0 0;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <div class="lang-row">
+      <div class="brand">KWU CARES · #KWUCares</div>
+      <div class="lang-pills">
+        <button class="lp on" onclick="setLang('en',this)">EN</button>
+        <button class="lp" onclick="setLang('ko',this)">한국어</button>
+      </div>
+    </div>
+    <div class="prog-wrap" id="prog-wrap">
+      <div class="prog-label"><span id="prog-text">Question 1 of 6</span><span id="prog-pct">17%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:17%"></div></div>
+    </div>
+  </div>
+
+  <div id="survey-screen" class="screen"></div>
+
+  <div id="ty-screen" class="ty-screen" style="display:none">
+    <div class="ty-icon">✓</div>
+    <div class="ty-title" id="ty-title">Thank you!</div>
+    <div class="ty-sub" id="ty-sub">Your answers help improve student life at KWU. Share this with a friend!</div>
+    <button class="ty-btn" onclick="showResults()" id="ty-btn1">See live results</button>
+    <button class="ty-btn2" onclick="resetSurvey()" id="ty-btn2">Take again</button>
+  </div>
+
+  <div id="res-screen" class="res-screen" style="display:none">
+    <div class="res-title" id="res-title">Live Results</div>
+    <div class="res-count" id="res-count"></div>
+    <div id="res-area"></div>
+  </div>
+
+  <div class="bottom-bar" id="bottom-bar">
+    <button class="btn-next" id="btn-next" onclick="goNext()">Next →</button>
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Back</button>
+  </div>
+</div>
+
+<script>
+const T={
+  en:{prog:(c,t)=>`Question ${c} of ${t}`,next:'Next →',submit:'Submit',back:'← Back',
+    ty:'Thank you!',tySub:'Your answers help improve student life at KWU. Share this with a friend!',
+    seeRes:'See live results',takeAgain:'Take again',liveRes:'Live Results',
+    total:n=>`${n} response${n!==1?'s':''}`},
+  ko:{prog:(c,t)=>`${t}개 중 ${c}번째`,next:'다음 →',submit:'제출',back:'← 이전',
+    ty:'감사합니다!',tySub:'여러분의 답변이 KWU 학생 생활 개선에 도움이 됩니다. 친구에게도 공유해주세요!',
+    seeRes:'실시간 결과 보기',takeAgain:'다시 응답',liveRes:'실시간 결과',
+    total:n=>`총 ${n}개 응답`}
+};
+
+const Qs=[
+  {en:{q:'What is your student status at KWU?',ko:'KWU에서의 학생 신분은?'},type:'single',
+   opts:[{en:'Korean student',ko:'한국 학생'},{en:'International student',ko:'국제 학생'},{en:'Exchange student',ko:'교환 학생'},{en:'Graduate student',ko:'대학원생'}]},
+  {en:{q:"How aware are you of KWU's mental health counseling?",ko:'KWU 정신건강 상담 서비스를 알고 계신가요?'},type:'single',
+   opts:[{en:'Not aware at all',ko:'전혀 모름'},{en:'Heard of it, never used',ko:'들어봤지만 이용 안 함'},{en:'Used it once or twice',ko:'한두 번 이용함'},{en:'Regularly use it',ko:'정기적으로 이용함'}]},
+  {en:{q:'How is your mental wellbeing this semester?',ko:'이번 학기 정신 건강 상태는?'},type:'scale',
+   lo:{en:'Very poor',ko:'매우 나쁨'},hi:{en:'Excellent',ko:'매우 좋음'}},
+  {en:{q:'Biggest barrier to seeking mental health support?',ko:'정신건강 지원을 받는 데 가장 큰 장벽은?'},type:'single',
+   opts:[{en:'Social stigma',ko:'사회적 낙인'},{en:"Don't know where to go",ko:'어디로 갈지 모름'},{en:'Language barrier',ko:'언어 장벽'},{en:'Too busy / no time',ko:'너무 바쁨'},{en:"I don't need support",ko:'지원 필요 없음'}]},
+  {en:{q:'How included do you feel in KWU campus life?',ko:'KWU 캠퍼스 생활에서 소속감은?'},type:'scale',
+   lo:{en:'Not included',ko:'전혀 없음'},hi:{en:'Fully included',ko:'완전히 있음'}},
+  {en:{q:'Which initiative would help you most?',ko:'어떤 지원이 가장 도움이 될까요?'},type:'single',
+   opts:[{en:'More counseling hours',ko:'상담 시간 확대'},{en:'International buddy program',ko:'버디 프로그램'},{en:'Multilingual resources',ko:'다국어 지원'},{en:'Mental health events',ko:'인식 행사'},{en:'Peer support groups',ko:'동료 지원 그룹'}]}
+];
+
+let lang='en',cur=0,ans=new Array(Qs.length).fill(null);
+let responses=Qs.map(q=>q.type==='scale'?{1:0,2:0,3:0,4:0,5:0}:q.opts.reduce((a,o)=>({...a,[o.en]:0}),{}));
+
+function setLang(l,btn){
+  lang=l;
+  document.querySelectorAll('.lp').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render();updateUI();
+}
+
+function updateUI(){
+  const t=T[lang];
+  const total=Qs.length;
+  const pct=Math.round(((cur+1)/total)*100);
+  document.getElementById('prog-text').textContent=t.prog(cur+1,total);
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('btn-next').textContent=cur===total-1?t.submit:t.next;
+  document.getElementById('btn-back').style.display=cur>0?'block':'none';
+  document.getElementById('ty-title').textContent=t.ty;
+  document.getElementById('ty-sub').textContent=t.tySub;
+  document.getElementById('ty-btn1').textContent=t.seeRes;
+  document.getElementById('ty-btn2').textContent=t.takeAgain;
+  document.getElementById('res-title').textContent=t.liveRes;
+}
+
+function render(){
+  const q=Qs[cur];
+  const t=T[lang];
+  const total=Qs.length;
+  const pct=Math.round(((cur+1)/total)*100);
+  document.getElementById('prog-text').textContent=t.prog(cur+1,total);
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('btn-next').textContent=cur===total-1?t.submit:t.next;
+  document.getElementById('btn-back').style.display=cur>0?'block':'none';
+  let html=`<div class="q-chip">${t.prog(cur+1,total)}</div>
+    <div class="q-text">${q.en.q}</div>
+    <div class="q-ko">${q.en.ko}</div>`;
+  if(q.type==='single'){
+    html+=`<div class="opts">`;
+    q.opts.forEach((o,i)=>{
+      const sel=ans[cur]===i?'sel':'';
+      html+=`<button class="opt ${sel}" onclick="pick(${i})">
+        <div class="opt-dot"></div>
+        <div class="opt-labels"><div class="opt-en">${o.en}</div><div class="opt-ko">${o.ko}</div></div>
+      </button>`;
+    });
+    html+=`</div>`;
+  } else {
+    html+=`<div class="scale-wrap"><div class="scale-btns">`;
+    for(let i=1;i<=5;i++){
+      const sel=ans[cur]===i?'sel':'';
+      html+=`<button class="sb ${sel}" onclick="pickScale(${i})">${i}</button>`;
+    }
+    html+=`</div><div class="scale-ends"><span>${q.lo[lang]}</span><span>${q.hi[lang]}</span></div></div>`;
+  }
+  document.getElementById('survey-screen').innerHTML=html;
+}
+
+function pick(i){ans[cur]=i;render();}
+function pickScale(v){ans[cur]=v;render();}
+
+function goNext(){
+  if(ans[cur]===null){
+    const s=document.getElementById('survey-screen');
+    s.classList.add('err-shake');
+    setTimeout(()=>s.classList.remove('err-shake'),300);
+    return;
+  }
+  const q=Qs[cur];
+  if(q.type==='single') responses[cur][q.opts[ans[cur]].en]++;
+  else responses[cur][ans[cur]]++;
+  if(cur<Qs.length-1){cur++;render();}
+  else showThankyou();
+}
+
+function goBack(){if(cur>0){cur--;render();}}
+
+function showThankyou(){
+  document.getElementById('survey-screen').style.display='none';
+  document.getElementById('prog-wrap').style.display='none';
+  document.getElementById('bottom-bar').style.display='none';
+  document.getElementById('ty-screen').style.display='flex';
+}
+
+function showResults(){
+  document.getElementById('ty-screen').style.display='none';
+  document.getElementById('res-screen').style.display='block';
+  const t=T[lang];
+  const total=Object.values(responses[0]).reduce((a,b)=>a+b,0);
+  document.getElementById('res-count').textContent=t.total(total);
+  let html='';
+  Qs.forEach((q,qi)=>{
+    const resp=responses[qi];
+    const tot=Math.max(1,Object.values(resp).reduce((a,b)=>a+b,0));
+    html+=`<div class="res-card"><div class="res-q">${q.en.q}</div>`;
+    if(q.type==='single'){
+      q.opts.forEach(o=>{
+        const cnt=resp[o.en]||0;
+        const pct=Math.round(cnt/tot*100);
+        html+=`<div class="res-row"><div class="res-row-top"><span class="res-label">${o.en}</span><span class="res-pct">${pct}%</span></div><div class="res-bar-track"><div class="res-bar-fill" style="width:${pct}%"></div></div></div>`;
+      });
+    } else {
+      for(let i=1;i<=5;i++){
+        const cnt=resp[i]||0;
+        const pct=Math.round(cnt/tot*100);
+        html+=`<div class="res-row"><div class="res-row-top"><span class="res-label">${i} ★</span><span class="res-pct">${pct}%</span></div><div class="res-bar-track"><div class="res-bar-fill" style="width:${pct}%"></div></div></div>`;
+      }
+    }
+    html+=`</div>`;
+  });
+  document.getElementById('res-area').innerHTML=html;
+  document.getElementById('bottom-bar').style.display='block';
+  document.getElementById('btn-next').textContent=T[lang].takeAgain;
+  document.getElementById('btn-next').onclick=resetSurvey;
+  document.getElementById('btn-back').style.display='none';
+}
+
+function resetSurvey(){
+  cur=0;ans=new Array(Qs.length).fill(null);
+  document.getElementById('res-screen').style.display='none';
+  document.getElementById('ty-screen').style.display='none';
+  document.getElementById('survey-screen').style.display='block';
+  document.getElementById('survey-screen').style.display='block';
+  document.getElementById('prog-wrap').style.display='block';
+  document.getElementById('bottom-bar').style.display='block';
+  document.getElementById('btn-next').onclick=goNext;
+  render();updateUI();
+}
+
+render();updateUI();
+</script>
+</body>
+</html>
