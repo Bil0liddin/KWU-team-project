@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>KWU Cares — Student Survey</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --indigo:    #4F46E5;
+    --indigo-dk: #3730A3;
+    --indigo-lt: #EEF2FF;
+    --indigo-bg: #1E1B4B;
+    --purple:    #818CF8;
+    --purple-lt: #A78BFA;
+    --gray-50:   #FAFAFA;
+    --gray-100:  #F3F4F6;
+    --gray-200:  #E5E7EB;
+    --gray-400:  #9CA3AF;
+    --gray-600:  #6B7280;
+    --gray-800:  #374151;
+    --gray-900:  #111827;
+    --dark-bg:   #0F0F1A;
+    --dark-card: #1E293B;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --shadow:    0 4px 40px rgba(0,0,0,0.12);
+  }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--dark-bg);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* ── App Shell ────────────────────────────────── */
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background: var(--gray-50);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Header ───────────────────────────────────── */
+  .header {
+    background: var(--indigo-bg);
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .brand {
+    color: var(--purple-lt);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+
+  .lang-pills {
+    display: flex;
+    gap: 6px;
+  }
+
+  .lang-btn {
+    padding: 5px 14px;
+    border-radius: 99px;
+    border: 1px solid #312E81;
+    background: transparent;
+    color: var(--gray-600);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .lang-btn.active {
+    background: var(--indigo);
+    color: white;
+    border-color: var(--indigo);
+  }
+
+  /* Progress */
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+  }
+
+  .progress-track {
+    height: 4px;
+    background: #1E293B;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--purple);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Screens ──────────────────────────────────── */
+  .screen {
+    flex: 1;
+    padding: 24px 20px 130px;
+    display: none;
+  }
+
+  .screen.active { display: block; }
+
+  /* ── Question ─────────────────────────────────── */
+  .q-chip {
+    display: inline-block;
+    background: var(--indigo-lt);
+    color: var(--indigo);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+  }
+
+  .q-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .q-ko {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-bottom: 24px;
+  }
+
+  /* ── Options ──────────────────────────────────── */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+  }
+
+  .option:active { transform: scale(0.98); }
+
+  .option.selected {
+    border-color: var(--indigo);
+    background: var(--indigo-lt);
+  }
+
+  .option-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-200);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .option.selected .option-dot {
+    background: var(--indigo);
+    border-color: var(--indigo);
+  }
+
+  .option.selected .option-dot::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    display: block;
+  }
+
+  .option-text { display: flex; flex-direction: column; }
+
+  .option-en {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  .option.selected .option-en { color: var(--indigo-dk); }
+
+  .option-ko {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  .option.selected .option-ko { color: var(--indigo); }
+
+  /* ── Scale ────────────────────────────────────── */
+  .scale-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .scale-btn {
+    flex: 1;
+    height: 60px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gray-800);
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .scale-btn:active { transform: scale(0.95); }
+
+  .scale-btn.selected {
+    background: var(--indigo);
+    border-color: var(--indigo);
+    color: white;
+  }
+
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--gray-400);
+    padding: 0 4px;
+  }
+
+  /* ── Bottom Bar ───────────────────────────────── */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    padding: 12px 20px 28px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-100);
+    z-index: 50;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 17px;
+    background: var(--indigo);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+    background: var(--indigo-dk);
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--gray-400);
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+
+  /* ── Error Shake ──────────────────────────────── */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-8px); }
+    75%       { transform: translateX(8px); }
+  }
+
+  .shake { animation: shake 0.3s ease; }
+
+  /* ── Thank You Screen ─────────────────────────── */
+  .ty-screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+    background: var(--gray-50);
+  }
+
+  .ty-screen.active { display: flex; }
+
+  .ty-check {
+    width: 80px;
+    height: 80px;
+    background: var(--indigo-lt);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: var(--indigo);
+    font-weight: 700;
+  }
+
+  .ty-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 10px;
+  }
+
+  .ty-sub {
+    font-size: 15px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .ty-btn-primary {
+    width: 100%;
+    padding: 17px;
+    background: var(--indigo);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.15s;
+  }
+
+  .ty-btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  /* ── Results Screen ───────────────────────────── */
+  .results-screen {
+    flex: 1;
+    padding: 24px 20px 130px;
+    display: none;
+    background: var(--gray-50);
+  }
+
+  .results-screen.active { display: block; }
+
+  .results-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+
+  .results-count {
+    font-size: 13px;
+    color: var(--indigo);
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .result-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-100);
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+
+  .result-q {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+
+  .result-row { margin-bottom: 10px; }
+
+  .result-row-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .result-label { color: var(--gray-800); font-weight: 500; }
+  .result-pct   { color: var(--indigo); font-weight: 700; }
+
+  .result-track {
+    height: 7px;
+    background: var(--gray-100);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .result-fill {
+    height: 100%;
+    background: var(--indigo);
+    border-radius: 99px;
+    transition: width 0.6s ease;
+  }
+
+  /* ── Desktop tweak ────────────────────────────── */
+  @media (min-width: 481px) {
+    body { align-items: flex-start; padding: 40px 0; }
+    .app {
+      min-height: auto;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .bottom-bar { border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-top">
+      <span class="brand">KWU Cares &middot; #KWUCares</span>
+      <div class="lang-pills">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn"        id="btn-ko" onclick="setLang('ko')">한국어</button>
+      </div>
+    </div>
+    <div id="progress-wrap">
+      <div class="progress-meta">
+        <span id="prog-label">Question 1 of 6</span>
+        <span id="prog-pct">17%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width: 17%;"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Survey Screen -->
+  <main class="screen active" id="survey-screen">
+    <div id="question-area"></div>
+  </main>
+
+  <!-- Thank You Screen -->
+  <div class="ty-screen" id="ty-screen">
+    <div class="ty-check">&#10003;</div>
+    <h2 class="ty-title" id="ty-title">Thank you!</h2>
+    <p  class="ty-sub"   id="ty-sub">Your answers help improve student life at KWU. Share this with a friend!</p>
+    <button class="ty-btn-primary"   onclick="showResults()" id="ty-results-btn">See live results</button>
+    <button class="ty-btn-secondary" onclick="resetSurvey()" id="ty-again-btn">Take again</button>
+  </div>
+
+  <!-- Results Screen -->
+  <div class="results-screen" id="results-screen">
+    <h2 class="results-title" id="results-title">Live Results</h2>
+    <p  class="results-count" id="results-count"></p>
+    <div id="results-area"></div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar" id="bottom-bar">
+    <button class="btn-primary"   id="btn-next" onclick="goNext()">Next &rarr;</button>
+    <button class="btn-secondary" id="btn-back" onclick="goBack()" style="display:none;">&#8592; Back</button>
+  </div>
+
+</div>
+
+<script>
+  /* ── Data ─────────────────────────────────────── */
+  var lang = 'en';
+  var current = 0;
+  var answers = [null, null, null, null, null, null];
+
+  var labels = {
+    en: {
+      prog    : function(c, t) { return 'Question ' + c + ' of ' + t; },
+      next    : 'Next \u2192',
+      submit  : 'Submit',
+      back    : '\u2190 Back',
+      tyTitle : 'Thank you!',
+      tySub   : 'Your answers help improve student life at KWU. Share this with a friend!',
+      resBtn  : 'See live results',
+      again   : 'Take again',
+      resTitle: 'Live Results',
+      total   : function(n) { return n + ' response' + (n !== 1 ? 's' : ''); }
+    },
+    ko: {
+      prog    : function(c, t) { return t + '개 중 ' + c + '번째'; },
+      next    : '다음 \u2192',
+      submit  : '제출',
+      back    : '\u2190 이전',
+      tyTitle : '감사합니다!',
+      tySub   : '여러분의 답변이 KWU 학생 생활 개선에 도움이 됩니다. 친구에게도 공유해주세요!',
+      resBtn  : '실시간 결과 보기',
+      again   : '다시 응답',
+      resTitle: '실시간 결과',
+      total   : function(n) { return '총 ' + n + '개 응답'; }
+    }
+  };
+
+  var questions = [
+    {
+      en: 'What is your student status at KWU?',
+      ko: 'KWU에서의 학생 신분은?',
+      type: 'single',
+      options: [
+        { en: 'Korean student',       ko: '한국 학생' },
+        { en: 'International student',ko: '국제 학생' },
+        { en: 'Exchange student',     ko: '교환 학생' },
+        { en: 'Graduate student',     ko: '대학원생'  }
+      ]
+    },
+    {
+      en: "How aware are you of KWU's mental health counseling?",
+      ko: 'KWU 정신건강 상담 서비스를 알고 계신가요?',
+      type: 'single',
+      options: [
+        { en: 'Not aware at all',         ko: '전혀 모름'          },
+        { en: 'Heard of it, never used',  ko: '들어봤지만 이용 안 함' },
+        { en: 'Used it once or twice',    ko: '한두 번 이용함'      },
+        { en: 'Regularly use it',         ko: '정기적으로 이용함'    }
+      ]
+    },
+    {
+      en: 'How is your mental wellbeing this semester?',
+      ko: '이번 학기 정신 건강 상태는?',
+      type: 'scale',
+      lo: { en: 'Very poor', ko: '매우 나쁨' },
+      hi: { en: 'Excellent', ko: '매우 좋음' }
+    },
+    {
+      en: 'Biggest barrier to seeking mental health support?',
+      ko: '정신건강 지원을 받는 데 가장 큰 장벽은?',
+      type: 'single',
+      options: [
+        { en: 'Social stigma',         ko: '사회적 낙인'    },
+        { en: "Don't know where to go",ko: '어디로 갈지 모름'},
+        { en: 'Language barrier',      ko: '언어 장벽'      },
+        { en: 'Too busy / no time',    ko: '너무 바쁨'      },
+        { en: "I don't need support",  ko: '지원 필요 없음'  }
+      ]
+    },
+    {
+      en: 'How included do you feel in KWU campus life?',
+      ko: 'KWU 캠퍼스 생활에서 소속감은?',
+      type: 'scale',
+      lo: { en: 'Not included',  ko: '전혀 없음'    },
+      hi: { en: 'Fully included',ko: '완전히 있음'  }
+    },
+    {
+      en: 'Which initiative would help you most?',
+      ko: '어떤 지원이 가장 도움이 될까요?',
+      type: 'single',
+      options: [
+        { en: 'More counseling hours',      ko: '상담 시간 확대'    },
+        { en: 'International buddy program',ko: '버디 프로그램'     },
+        { en: 'Multilingual resources',     ko: '다국어 지원'       },
+        { en: 'Mental health events',       ko: '인식 행사'         },
+        { en: 'Peer support groups',        ko: '동료 지원 그룹'    }
+      ]
+    }
+  ];
+
+  /* Tally — keyed by English label for single, number for scale */
+  var tally = questions.map(function(q) {
+    if (q.type === 'scale') {
+      return { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    }
+    var obj = {};
+    q.options.forEach(function(o) { obj[o.en] = 0; });
+    return obj;
+  });
+
+  /* ── Language ─────────────────────────────────── */
+  function setLang(l) {
+    lang = l;
+    document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    document.getElementById('btn-ko').classList.toggle('active', l === 'ko');
+    renderQuestion();
+    syncUI();
+  }
+
+  /* ── Sync static labels ───────────────────────── */
+  function syncUI() {
+    var t = labels[lang];
+    var total = questions.length;
+    var pct   = Math.round(((current + 1) / total) * 100);
+
+    document.getElementById('prog-label').textContent = t.prog(current + 1, total);
+    document.getElementById('prog-pct').textContent   = pct + '%';
+    document.getElementById('prog-fill').style.width  = pct + '%';
+    document.getElementById('btn-next').textContent   = current === total - 1 ? t.submit : t.next;
+    document.getElementById('btn-back').style.display = current > 0 ? 'block' : 'none';
+
+    document.getElementById('ty-title').textContent      = t.tyTitle;
+    document.getElementById('ty-sub').textContent        = t.tySub;
+    document.getElementById('ty-results-btn').textContent= t.resBtn;
+    document.getElementById('ty-again-btn').textContent  = t.again;
+    document.getElementById('results-title').textContent = t.resTitle;
+  }
+
+  /* ── Render Question ──────────────────────────── */
+  function renderQuestion() {
+    var q     = questions[current];
+    var t     = labels[lang];
+    var total = questions.length;
+    var pct   = Math.round(((current + 1) / total) * 100);
+
+    document.getElementById('prog-label').textContent = t.prog(current + 1, total);
+    document.getElementById('prog-pct').textContent   = pct + '%';
+    document.getElementById('prog-fill').style.width  = pct + '%';
+    document.getElementById('btn-next').textContent   = current === total - 1 ? t.submit : t.next;
+    document.getElementById('btn-back').style.display = current > 0 ? 'block' : 'none';
+
+    var html = '<span class="q-chip">' + t.prog(current + 1, total) + '</span>'
+             + '<h2 class="q-title">' + q[lang === 'en' ? 'en' : 'en'] + '</h2>'
+             + '<p class="q-ko">' + q.ko + '</p>';
+
+    if (q.type === 'single') {
+      html += '<div class="options">';
+      q.options.forEach(function(o, i) {
+        var sel = answers[current] === i ? ' selected' : '';
+        html += '<button class="option' + sel + '" onclick="pick(' + i + ')">'
+              +   '<div class="option-dot"></div>'
+              +   '<div class="option-text">'
+              +     '<span class="option-en">' + o.en + '</span>'
+              +     '<span class="option-ko">' + o.ko + '</span>'
+              +   '</div>'
+              + '</button>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="scale-buttons">';
+      for (var i = 1; i <= 5; i++) {
+        var sel = answers[current] === i ? ' selected' : '';
+        html += '<button class="scale-btn' + sel + '" onclick="pickScale(' + i + ')">' + i + '</button>';
+      }
+      html += '</div>'
+            + '<div class="scale-labels">'
+            +   '<span>' + q.lo[lang] + '</span>'
+            +   '<span>' + q.hi[lang] + '</span>'
+            + '</div>';
+    }
+
+    document.getElementById('question-area').innerHTML = html;
+  }
+
+  /* ── Interactions ─────────────────────────────── */
+  function pick(i) {
+    answers[current] = i;
+    renderQuestion();
+  }
+
+  function pickScale(v) {
+    answers[current] = v;
+    renderQuestion();
+  }
+
+  function goNext() {
+    if (answers[current] === null) {
+      var area = document.getElementById('question-area');
+      area.classList.add('shake');
+      setTimeout(function() { area.classList.remove('shake'); }, 300);
+      return;
+    }
+
+    /* Record tally */
+    var q = questions[current];
+    if (q.type === 'single') {
+      tally[current][q.options[answers[current]].en]++;
+    } else {
+      tally[current][answers[current]]++;
+    }
+
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      showThankYou();
+    }
+  }
+
+  function goBack() {
+    if (current > 0) {
+      current--;
+      renderQuestion();
+    }
+  }
+
+  /* ── Screen transitions ───────────────────────── */
+  function showThankYou() {
+    document.getElementById('survey-screen').classList.remove('active');
+    document.getElementById('ty-screen').classList.add('active');
+    document.getElementById('progress-wrap').style.display = 'none';
+    document.getElementById('bottom-bar').style.display    = 'none';
+    syncUI();
+  }
+
+  function showResults() {
+    document.getElementById('ty-screen').classList.remove('active');
+    document.getElementById('results-screen').classList.add('active');
+    document.getElementById('bottom-bar').style.display = 'block';
+
+    var t     = labels[lang];
+    var total = Object.values(tally[0]).reduce(function(a, b) { return a + b; }, 0);
+    document.getElementById('results-count').textContent = t.total(total);
+
+    document.getElementById('btn-next').textContent   = t.again;
+    document.getElementById('btn-next').onclick       = resetSurvey;
+    document.getElementById('btn-back').style.display = 'none';
+
+    var html = '';
+    questions.forEach(function(q, qi) {
+      var resp = tally[qi];
+      var sum  = Object.values(resp).reduce(function(a, b) { return a + b; }, 0) || 1;
+      html += '<div class="result-card"><p class="result-q">' + q.en + '</p>';
+      if (q.type === 'single') {
+        q.options.forEach(function(o) {
+          var cnt = resp[o.en] || 0;
+          var pct = Math.round(cnt / sum * 100);
+          html += '<div class="result-row">'
+                +   '<div class="result-row-top">'
+                +     '<span class="result-label">' + o.en + '</span>'
+                +     '<span class="result-pct">'   + pct + '%</span>'
+                +   '</div>'
+                +   '<div class="result-track"><div class="result-fill" style="width:' + pct + '%"></div></div>'
+                + '</div>';
+        });
+      } else {
+        for (var i = 1; i <= 5; i++) {
+          var cnt = resp[i] || 0;
+          var pct = Math.round(cnt / sum * 100);
+          html += '<div class="result-row">'
+                +   '<div class="result-row-top">'
+                +     '<span class="result-label">' + i + ' \u2605</span>'
+                +     '<span class="result-pct">'   + pct + '%</span>'
+                +   '</div>'
+                +   '<div class="result-track"><div class="result-fill" style="width:' + pct + '%"></div></div>'
+                + '</div>';
+        }
+      }
+      html += '</div>';
+    });
+    document.getElementById('results-area').innerHTML = html;
+  }
+
+  function resetSurvey() {
+    current = 0;
+    answers = [null, null, null, null, null, null];
+    document.getElementById('results-screen').classList.remove('active');
+    document.getElementById('survey-screen').classList.add('active');
+    document.getElementById('progress-wrap').style.display = 'block';
+    document.getElementById('bottom-bar').style.display    = 'block';
+    document.getElementById('btn-next').onclick = goNext;
+    renderQuestion();
+    syncUI();
+  }
+
+  /* ── Init ─────────────────────────────────────── */
+  renderQuestion();
+  syncUI();
+</script>
+</body>
+</html>
